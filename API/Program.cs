@@ -13,6 +13,10 @@ builder.Services.AddDbContext<StoreContext> (opt =>
 {
         opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));});
 
+//allow cross-origin
+builder.Services.AddCors();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,6 +25,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// allow the (middleware/client : localhost:3000) to access (me = the server)
+app.UseCors(opt => {
+    opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
+});
 
 //app.UseHttpsRedirection(); this app doen't use https
 
