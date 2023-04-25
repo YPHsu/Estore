@@ -1,42 +1,39 @@
-import { useEffect, useState } from "react";
-import { Product } from "../models/product";
 import Catalog from "../../features/catalog/Catalog";
-import { Typography } from "@mui/material";
+import { Container, CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import Header from "./Header";
+import { useState } from "react";
+import { KayakingRounded } from "@mui/icons-material";
 
 
 function App() {
-  const [products, setProducts] = useState<Product[]>([]);  // from interface Product
+  const [darkMode, setDarkMode] = useState(false); // start with light mode
+  const paletteType = darkMode ? 'dark' : 'light'
+  const theme = createTheme({
+    palette: {
+      mode: paletteType,
+      background: {
+        default: paletteType === 'light' ? '#eaeaea' : '#121212' // if lightmode => grey color, not => black
+      }
+    }
+  })
 
-  useEffect( ()=> {
-    fetch('http://localhost:5000/api/products')
-      .then(response => response.json())
-      .then(data => setProducts(data))
-    } ,[]  )
+function handleThemeChange(){
+  setDarkMode(!darkMode);
+}
 
 
-  
-
-  function addProduct(){
-    setProducts(prevState => [...prevState, 
-      { id: prevState.length + 101,
-        name:'product' + (prevState.length +1), 
-        price:(prevState.length * 100) + 100,
-        brand : 'some brand',
-        description: 'some description',
-        pictureUrl: 'http://picsum.photos/200'
-      
-      }])
-  }
   return (  
     // return a jsx (javascript xml) 
     // {products} is what we received above const [products, setProducts]  
-    // pass the function of addProduct to Catalog component 
-    <>
-      <Typography variant="h1" >Re-Store</Typography>      
-      <Catalog products={products} addProductF={addProduct}/> 
-      
-    </>
-    
+    // pass the function of addProduct to Catalog component
+    // CssBaseline is used to take out the margins and paddings 
+    <ThemeProvider theme={theme}>
+      <CssBaseline/> 
+      <Header darkMode={darkMode} handleThemeChange={handleThemeChange} />  
+      <Container>
+          <Catalog/> 
+      </Container>   
+    </ThemeProvider>    
   );
 }
 
